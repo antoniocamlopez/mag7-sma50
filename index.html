@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -6,14 +5,63 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mag7 SMA50 Watch</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 24px; }
+    :root{
+      --text:#111;
+      --muted:#666;
+      --line:#e6e6e6;
+
+      /* pills (más intensos) */
+      --pill-warn-bg:#FFD7A1;
+      --pill-warn-br:#B85E00;
+      --pill-warn-tx:#5A2A00;
+
+      --pill-ok-bg:#BFF4D2;
+      --pill-ok-br:#0F6A3A;
+      --pill-ok-tx:#06331C;
+
+      --pill-alert-bg:#6DEEB2;
+      --pill-alert-br:#0B6B3A;
+      --pill-alert-tx:#032414;
+
+      /* row highlight */
+      --row-alert-bg:#ECFFF4;
+    }
+
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; color: var(--text); }
+    h1 { margin: 0 0 8px 0; }
+    #meta { color: var(--muted); margin: 0 0 18px 0; }
+
     table { border-collapse: collapse; width: 100%; }
-    th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: right; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: right; vertical-align: middle; }
     th:first-child, td:first-child { text-align: left; }
-    .ok { font-weight: 700; }
-    .pill { padding: 2px 8px; border-radius: 999px; display: inline-block; font-size: 12px; }
-    .pill-ok { background: #e7f7ee; }
-    .pill-warn { background: #fff4e5; }
+    th { font-weight: 700; }
+
+    tr.alert-row { background: var(--row-alert-bg); }
+    td.ticker { font-weight: 700; }
+
+    .pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+    .pill-high, .pill-low { background: var(--pill-warn-bg); border-color: var(--pill-warn-br); color: var(--pill-warn-tx); }
+    .pill-inzone { background: var(--pill-ok-bg); border-color: var(--pill-ok-br); color: var(--pill-ok-tx); }
+    .pill-alert { background: var(--pill-alert-bg); border-color: var(--pill-alert-br); color: var(--pill-alert-tx); margin-left: 6px; }
+
+    .muted { color: var(--muted); font-size: 12px; }
+
+    /* Entry interpretativo */
+    .entry-main { font-weight: 700; }
+    .entry-sub  { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    /* Mini gauge */
+    .gauge { display: inline-block; }
+    .gauge svg { display: block; }
   </style>
 </head>
 <body>
@@ -29,7 +77,8 @@
         <th>Zona</th>
         <th>SMA↑</th>
         <th>Estado</th>
-        <th>Entry ref</th>
+        <th>Entrada (acción)</th>
+        <th>Mapa</th>
         <th>Stop (-5%)</th>
         <th>Target (+5%)</th>
       </tr>
@@ -38,8 +87,120 @@
   </table>
 
 <script>
+function fmt(n){ return Number(n).toFixed(2); }
+function fmtPct(x){
+  const s = (x >= 0) ? "+" : "";
+  return s + x.toFixed(1) + "%";
+}
+
+function statePills(r){
+  const base =
+    r.signal === "IN_ZONE" ? `<span class="pill pill-inzone">EN ZONA</span>`
+    : r.signal === "TOO_HIGH" ? `<span class="pill pill-high">ALTA</span>`
+    : `<span class="pill pill-low">BAJA</span>`;
+  const alert = r.alert ? `<span class="pill pill-alert">ALERTA</span>` : "";
+  return base + alert;
+}
+
+function entryInterpretation(r){
+  // % desde el close actual hasta el nivel requerido (entry_ref)
+  const pct = ((r.entry_ref / r.close) - 1) * 100;
+
+  if (r.signal === "TOO_HIGH") {
+    return {
+      main: `Pullback a ${fmt(r.entry_ref)}`,
+      sub: `Falta ${fmtPct(pct)} para entrar en zona`
+    };
+  }
+  if (r.signal === "TOO_LOW") {
+    return {
+      main: `Rebote a ${fmt(r.entry_ref)}`,
+      sub: `Falta ${fmtPct(pct)} para entrar en zona`
+    };
+  }
+  // IN_ZONE
+  return {
+    main: `Entrada ~${fmt(r.close)}`,
+    sub: `Dentro de zona (±1,5% de SMA50)`
+  };
+}
+
+// Mini-gauge: escala fija [stop..target]; clampa valores fuera.
+function gaugeSVG(r){
+  const W = 220, H = 22, PAD = 8;
+  const stop = r.stop;
+  const target = r.target;
+  const zoneL = r.zone_low;
+  const zoneH = r.zone_high;
+  const entry = r.entry_ref;
+  const price = r.close;
+
+  const span = (target - stop) || 1;
+
+  const xRaw = v => PAD + ((v - stop) / span) * (W - 2*PAD);
+  const clamp = v => Math.max(PAD, Math.min(W - PAD, xRaw(v)));
+
+  const xStop = PAD;
+  const xTarget = W - PAD;
+  const xEntry = clamp(entry);
+  const xPrice = clamp(price);
+
+  // Zona: puede quedar fuera del rango, la recortamos visualmente
+  const zx1 = clamp(zoneL);
+  const zx2 = clamp(zoneH);
+  const zW = Math.max(0, zx2 - zx1);
+
+  // Colores mínimos, coherentes
+  const zoneFill = "rgba(15,106,58,0.18)";
+  const baseLine = "#333";
+  const tick = "#333";
+  const entryCol = "#111";
+  const priceCol = r.alert ? "#0F6A3A" : "#111";
+  const stopCol = "#8B1E1E";
+  const tgtCol  = "#0F6A3A";
+
+  return `
+  <span class="gauge" title="Rango: Stop→Target; franja=Zona; | = Entry; ● = Close">
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">
+      <!-- base -->
+      <line x1="${xStop}" y1="${H/2}" x2="${xTarget}" y2="${H/2}" stroke="${baseLine}" stroke-width="2" stroke-linecap="round"></line>
+
+      <!-- zona -->
+      ${zW > 0 ? `<rect x="${zx1}" y="${(H/2)-6}" width="${zW}" height="12" fill="${zoneFill}" rx="6"></rect>` : ""}
+
+      <!-- stop / target ticks -->
+      <line x1="${xStop}" y1="${(H/2)-9}" x2="${xStop}" y2="${(H/2)+9}" stroke="${stopCol}" stroke-width="2"></line>
+      <line x1="${xTarget}" y1="${(H/2)-9}" x2="${xTarget}" y2="${(H/2)+9}" stroke="${tgtCol}" stroke-width="2"></line>
+
+      <!-- entry tick -->
+      <line x1="${xEntry}" y1="${(H/2)-9}" x2="${xEntry}" y2="${(H/2)+9}" stroke="${entryCol}" stroke-width="2"></line>
+
+      <!-- price dot -->
+      <circle cx="${xPrice}" cy="${H/2}" r="4.2" fill="${priceCol}"></circle>
+    </svg>
+  </span>`;
+}
+
+function sortRows(rows){
+  const rank = r => {
+    if (r.alert) return 0;
+    if (r.signal === "IN_ZONE") return 1;
+    if (r.signal === "TOO_HIGH") return 2;
+    return 3; // TOO_LOW
+  };
+  return [...rows].sort((a,b) => {
+    const ra = rank(a), rb = rank(b);
+    if (ra !== rb) return ra - rb;
+    // desempate: más cerca de entry_ref primero (en valor absoluto %)
+    const da = Math.abs((a.entry_ref / a.close) - 1);
+    const db = Math.abs((b.entry_ref / b.close) - 1);
+    return da - db;
+  });
+}
+
 (async () => {
-  const res = await fetch('./signals.json', { cache: 'no-store' });
+  // cache-busting para evitar que Pages sirva un JSON viejo
+  const res = await fetch('./signals.json?v=' + Date.now(), { cache: 'no-store' });
   const data = await res.json();
 
   document.getElementById('meta').textContent =
@@ -48,25 +209,28 @@
   const tbody = document.querySelector('#t tbody');
   tbody.innerHTML = '';
 
-  const pill = (txt, cls) => `<span class="pill ${cls}">${txt}</span>`;
+  const rows = sortRows(data.rows || []);
 
-  for (const r of data.rows) {
-    const state =
-      r.signal === "IN_ZONE" ? pill("EN ZONA", "pill-ok")
-      : r.signal === "TOO_HIGH" ? pill("ALTA", "pill-warn")
-      : pill("BAJA", "pill-warn");
+  for (const r of rows) {
+    const entry = entryInterpretation(r);
 
     const tr = document.createElement('tr');
+    if (r.alert) tr.classList.add('alert-row');
+
     tr.innerHTML = `
-      <td class="${r.alert ? 'ok' : ''}">${r.ticker}</td>
-      <td>${r.close.toFixed(2)}</td>
-      <td>${r.sma50.toFixed(2)}</td>
-      <td>${r.zone_low.toFixed(2)}–${r.zone_high.toFixed(2)}</td>
+      <td class="ticker">${r.ticker}</td>
+      <td>${fmt(r.close)}</td>
+      <td>${fmt(r.sma50)}</td>
+      <td>${fmt(r.zone_low)}–${fmt(r.zone_high)}</td>
       <td>${r.sma50_up ? "Sí" : "No"}</td>
-      <td>${state}${r.alert ? " " + pill("ALERTA", "pill-ok") : ""}</td>
-      <td>${r.entry_ref.toFixed(2)}</td>
-      <td>${r.stop.toFixed(2)}</td>
-      <td>${r.target.toFixed(2)}</td>
+      <td>${statePills(r)}</td>
+      <td>
+        <div class="entry-main">${entry.main}</div>
+        <div class="entry-sub">${entry.sub}</div>
+      </td>
+      <td>${gaugeSVG(r)}</td>
+      <td>${fmt(r.stop)}</td>
+      <td>${fmt(r.target)}</td>
     `;
     tbody.appendChild(tr);
   }
