@@ -11,7 +11,7 @@ BAND = 0.015          # ±1,5%
 STOP_PCT = 0.05       # -5%
 TARGET_PCT = 0.05     # +5%
 SMA_SLOPE_LOOKBACK = 5  # SMA50 hoy > SMA50 hace 5 sesiones
-MIN_ROWS = 80
+MIN_ROWS = 260
 
 def stooq_csv_url(ticker: str) -> str:
     return f"https://stooq.com/q/d/l/?s={ticker}.US&i=d"
