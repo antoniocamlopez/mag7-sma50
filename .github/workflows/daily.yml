@@ -1,0 +1,25 @@
+name: Update signals
+
+on:
+  schedule:
+    - cron: "30 22 * * 1-5"  # 22:30 UTC, lunes-viernes
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: python update.py
+
+      - name: Commit updated JSON
+        run: |
+          git config user.name "mag7-bot"
+          git config user.email "mag7-bot@users.noreply.github.com"
+          git add signals.json
+          git commit -m "update signals" || exit 0
+          git push
