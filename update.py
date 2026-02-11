@@ -2,7 +2,10 @@ import csv, json
 from datetime import datetime, timezone
 from urllib.request import urlopen, Request
 
-TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "META", "TSLA", "NVDA"]
+TICKERS = [
+  "AAPL","MSFT","AMZN","GOOGL","META","TSLA","NVDA",
+  "AVGO","BRK-B","LLY","V","JPM","XOM","WMT","UNH"
+]
 
 BAND = 0.015          # ±1,5%
 STOP_PCT = 0.05       # -5%
