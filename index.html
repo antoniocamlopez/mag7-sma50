@@ -62,6 +62,18 @@
     /* Mini gauge */
     .gauge { display: inline-block; }
     .gauge svg { display: block; }
+
+
+
+    td.ma200 { min-width: 120px; border-radius: 8px; }
+td.ma200.bull { background: #E8FFF0; }
+td.ma200.mixed { background: #FFF1DD; }
+td.ma200.bear { background: #FFECEC; }
+td.ma200 .muted { margin-top: 2px; display: block; }
+
+
+
+    
   </style>
 </head>
 <body>
@@ -74,6 +86,7 @@
         <th>Ticker</th>
         <th>Close</th>
         <th>SMA50</th>
+        <th>SMA200</th>
         <th>Zona</th>
         <th>SMA↑</th>
         <th>Estado</th>
@@ -217,21 +230,33 @@ function sortRows(rows){
     const tr = document.createElement('tr');
     if (r.alert) tr.classList.add('alert-row');
 
-    tr.innerHTML = `
-      <td class="ticker">${r.ticker}</td>
-      <td>${fmt(r.close)}</td>
-      <td>${fmt(r.sma50)}</td>
-      <td>${fmt(r.zone_low)}–${fmt(r.zone_high)}</td>
-      <td>${r.sma50_up ? "Sí" : "No"}</td>
-      <td>${statePills(r)}</td>
-      <td>
-        <div class="entry-main">${entry.main}</div>
-        <div class="entry-sub">${entry.sub}</div>
-      </td>
-      <td>${gaugeSVG(r)}</td>
-      <td>${fmt(r.stop)}</td>
-      <td>${fmt(r.target)}</td>
-    `;
+    const dist200 = ((r.close / r.sma200) - 1) * 100;
+    let maClass = "bear";
+    if (r.close >= r.sma200) maClass = r.sma200_up ? "bull" : "mixed";
+
+    
+tr.innerHTML = `
+  <td class="ticker">${r.ticker}</td>
+  <td>${fmt(r.close)}</td>
+  <td>${fmt(r.sma50)}</td>
+
+  <td class="ma200 ${maClass}">
+    <div>${fmt(r.sma200)}</div>
+    <span class="muted">${r.sma200_up ? "↑" : "↓"} · ${fmtPct(dist200)}</span>
+  </td>
+
+  <td>${fmt(r.zone_low)}–${fmt(r.zone_high)}</td>
+  <td>${r.sma50_up ? "Sí" : "No"}</td>
+  <td>${statePills(r)}</td>
+  <td>
+    <div class="entry-main">${entry.main}</div>
+    <div class="entry-sub">${entry.sub}</div>
+  </td>
+  <td>${gaugeSVG(r)}</td>
+  <td>${fmt(r.stop)}</td>
+  <td>${fmt(r.target)}</td>
+`;
+
     tbody.appendChild(tr);
   }
 })();
