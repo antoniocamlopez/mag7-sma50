@@ -1,1 +1,76 @@
 
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mag7 SMA50 Watch</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    .ok { font-weight: 700; }
+    .pill { padding: 2px 8px; border-radius: 999px; display: inline-block; font-size: 12px; }
+    .pill-ok { background: #e7f7ee; }
+    .pill-warn { background: #fff4e5; }
+  </style>
+</head>
+<body>
+  <h1>Mag7 — SMA50 ±1,5%</h1>
+  <p id="meta"></p>
+
+  <table id="t">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Close</th>
+        <th>SMA50</th>
+        <th>Zona</th>
+        <th>SMA↑</th>
+        <th>Estado</th>
+        <th>Entry ref</th>
+        <th>Stop (-5%)</th>
+        <th>Target (+5%)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+(async () => {
+  const res = await fetch('./signals.json', { cache: 'no-store' });
+  const data = await res.json();
+
+  document.getElementById('meta').textContent =
+    `Actualizado: ${data.generated_at} (precios: Stooq)`;
+
+  const tbody = document.querySelector('#t tbody');
+  tbody.innerHTML = '';
+
+  const pill = (txt, cls) => `<span class="pill ${cls}">${txt}</span>`;
+
+  for (const r of data.rows) {
+    const state =
+      r.signal === "IN_ZONE" ? pill("EN ZONA", "pill-ok")
+      : r.signal === "TOO_HIGH" ? pill("ALTA", "pill-warn")
+      : pill("BAJA", "pill-warn");
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="${r.alert ? 'ok' : ''}">${r.ticker}</td>
+      <td>${r.close.toFixed(2)}</td>
+      <td>${r.sma50.toFixed(2)}</td>
+      <td>${r.zone_low.toFixed(2)}–${r.zone_high.toFixed(2)}</td>
+      <td>${r.sma50_up ? "Sí" : "No"}</td>
+      <td>${state}${r.alert ? " " + pill("ALERTA", "pill-ok") : ""}</td>
+      <td>${r.entry_ref.toFixed(2)}</td>
+      <td>${r.stop.toFixed(2)}</td>
+      <td>${r.target.toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+})();
+</script>
+</body>
+</html>
