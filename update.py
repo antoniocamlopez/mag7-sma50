@@ -44,6 +44,11 @@ def main():
         sma50_prev = sum(closes[-50 - SMA_SLOPE_LOOKBACK:-SMA_SLOPE_LOOKBACK]) / 50
         sma_up = sma50_today > sma50_prev
 
+        sma200_today = sma(closes, 200)
+        sma200_prev = sum(closes[-200 - SMA_SLOPE_LOOKBACK:-SMA_SLOPE_LOOKBACK]) / 200
+        sma200_up = sma200_today > sma200_prev
+
+      
         zone_low = sma50_today * (1 - BAND)
         zone_high = sma50_today * (1 + BAND)
 
@@ -65,6 +70,8 @@ def main():
         out["rows"].append({
             "ticker": t,
             "close": close_today,
+            "sma200": sma200_today,
+            "sma200_up": sma200_up,
             "sma50": sma50_today,
             "sma50_up": sma_up,
             "zone_low": zone_low,
