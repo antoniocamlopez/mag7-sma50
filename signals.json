@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-12 09:55 UTC",
+  "generated_at": "2026-02-12 10:10 UTC",
   "rows": [
     {
       "ticker": "AAPL",
@@ -13,7 +13,7 @@
       "signal": "TOO_HIGH",
       "entry_ref": 272.53846200000004,
       "stop": 258.91153890000004,
-      "target": 286.16538510000004,
+      "target": 299.7923082000001,
       "alert": false
     },
     {
@@ -28,7 +28,7 @@
       "signal": "TOO_LOW",
       "entry_ref": 457.44838099999987,
       "stop": 434.57596194999985,
-      "target": 480.3208000499999,
+      "target": 503.1932190999999,
       "alert": false
     },
     {
@@ -43,7 +43,7 @@
       "signal": "TOO_LOW",
       "entry_ref": 228.37776599999998,
       "stop": 216.95887769999996,
-      "target": 239.7966543,
+      "target": 251.2155426,
       "alert": false
     },
     {
@@ -58,7 +58,7 @@
       "signal": "TOO_LOW",
       "entry_ref": 316.71729400000004,
       "stop": 300.88142930000004,
-      "target": 332.55315870000004,
+      "target": 348.38902340000004,
       "alert": false
     },
     {
@@ -73,7 +73,7 @@
       "signal": "TOO_HIGH",
       "entry_ref": 668.0271220000001,
       "stop": 634.6257659,
-      "target": 701.4284781000001,
+      "target": 734.8298342000002,
       "alert": false
     },
     {
@@ -88,7 +88,7 @@
       "signal": "TOO_LOW",
       "entry_ref": 437.7789159999999,
       "stop": 415.88997019999994,
-      "target": 459.6678617999999,
+      "target": 481.55680759999996,
       "alert": false
     },
     {
@@ -103,7 +103,7 @@
       "signal": "TOO_HIGH",
       "entry_ref": 187.00136700000002,
       "stop": 177.65129865,
-      "target": 196.35143535000003,
+      "target": 205.70150370000005,
       "alert": false
     },
     {
@@ -118,112 +118,37 @@
       "signal": "TOO_LOW",
       "entry_ref": 342.9598609999999,
       "stop": 325.81186794999985,
-      "target": 360.1078540499999,
+      "target": 377.25584709999987,
       "alert": false
     },
     {
-      "ticker": "BRK-B",
-      "close": 500.02,
-      "sma200": 493.79919999999976,
-      "sma200_up": false,
-      "sma50": 495.92000000000013,
-      "sma50_up": false,
-      "zone_low": 488.4812000000001,
-      "zone_high": 503.3588000000001,
-      "signal": "IN_ZONE",
-      "entry_ref": 500.02,
-      "stop": 475.01899999999995,
-      "target": 525.021,
-      "alert": false
-    },
-    {
-      "ticker": "LLY",
-      "close": 1015.21,
-      "sma200": 862.0491000000005,
+      "ticker": "PLTR",
+      "close": 135.68,
+      "sma200": 160.611225,
       "sma200_up": true,
-      "sma50": 1050.367,
+      "sma50": 171.34740000000002,
       "sma50_up": false,
-      "zone_low": 1034.6114949999999,
-      "zone_high": 1066.1225049999998,
+      "zone_low": 168.77718900000002,
+      "zone_high": 173.917611,
       "signal": "TOO_LOW",
-      "entry_ref": 1034.6114949999999,
-      "stop": 982.8809202499998,
-      "target": 1086.3420697499998,
+      "entry_ref": 168.77718900000002,
+      "stop": 160.33832955000003,
+      "target": 185.65490790000004,
       "alert": false
     },
     {
-      "ticker": "V",
-      "close": 329.24,
-      "sma200": 344.83450000000005,
-      "sma200_up": false,
-      "sma50": 337.46299999999997,
-      "sma50_up": false,
-      "zone_low": 332.401055,
-      "zone_high": 342.52494499999995,
-      "signal": "TOO_LOW",
-      "entry_ref": 332.401055,
-      "stop": 315.78100225,
-      "target": 349.02110775,
-      "alert": false
-    },
-    {
-      "ticker": "JPM",
-      "close": 310.82,
-      "sma200": 296.39994999999993,
+      "ticker": "ASML",
+      "close": 1435.63,
+      "sma200": 937.8588750000004,
       "sma200_up": true,
-      "sma50": 315.3544,
+      "sma50": 1230.6346999999998,
       "sma50_up": true,
-      "zone_low": 310.624084,
-      "zone_high": 320.08471599999996,
-      "signal": "IN_ZONE",
-      "entry_ref": 310.82,
-      "stop": 295.279,
-      "target": 326.361,
-      "alert": true
-    },
-    {
-      "ticker": "XOM",
-      "close": 155.56,
-      "sma200": 115.1212000000001,
-      "sma200_up": true,
-      "sma50": 127.56740000000002,
-      "sma50_up": true,
-      "zone_low": 125.65388900000002,
-      "zone_high": 129.48091100000002,
+      "zone_low": 1212.1751794999998,
+      "zone_high": 1249.0942204999997,
       "signal": "TOO_HIGH",
-      "entry_ref": 129.48091100000002,
-      "stop": 123.00686545,
-      "target": 135.95495655000002,
-      "alert": false
-    },
-    {
-      "ticker": "WMT",
-      "close": 128.77,
-      "sma200": 104.37845000000002,
-      "sma200_up": true,
-      "sma50": 117.23400000000001,
-      "sma50_up": true,
-      "zone_low": 115.47549000000001,
-      "zone_high": 118.99251,
-      "signal": "TOO_HIGH",
-      "entry_ref": 118.99251,
-      "stop": 113.04288449999999,
-      "target": 124.9421355,
-      "alert": false
-    },
-    {
-      "ticker": "UNH",
-      "close": 278.91,
-      "sma200": 321.140835,
-      "sma200_up": false,
-      "sma50": 322.63199999999995,
-      "sma50_up": false,
-      "zone_low": 317.79251999999997,
-      "zone_high": 327.47147999999993,
-      "signal": "TOO_LOW",
-      "entry_ref": 317.79251999999997,
-      "stop": 301.90289399999995,
-      "target": 333.682146,
+      "entry_ref": 1249.0942204999997,
+      "stop": 1186.6395094749996,
+      "target": 1374.0036425499998,
       "alert": false
     }
   ]
