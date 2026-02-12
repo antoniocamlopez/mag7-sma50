@@ -4,12 +4,12 @@ from urllib.request import urlopen, Request
 
 TICKERS = [
   "AAPL","MSFT","AMZN","GOOGL","META","TSLA","NVDA",
-  "AVGO","BRK-B","LLY","V","JPM","XOM","WMT","UNH"
+  "AVGO","PLTR", "ASML"
 ]
 
 BAND = 0.015          # ±1,5%
 STOP_PCT = 0.05       # -5%
-TARGET_PCT = 0.05     # +5%
+TARGET_PCT = 0.1     # +5%
 SMA_SLOPE_LOOKBACK = 5  # SMA50 hoy > SMA50 hace 5 sesiones
 MIN_ROWS = 260
 
